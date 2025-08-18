@@ -9,14 +9,14 @@ def iterative_deepening_search(problem):
         if resultado is not None:
             return resultado
 
-# grafo = {
-#     'Tarefa A': ['Tarefa B', 'Tarefa C'],
-#     'Tarefa B': ['Tarefa A', 'Tarefa D', 'Tarefa E'],
-#     'Tarefa C': ['Tarefa A', 'Tarefa F'],
-#     'Tarefa D': ['Tarefa B'],
-#     'Tarefa E': ['Tarefa B', 'Tarefa F'],
-#     'Tarefa F': ['Tarefa C', 'Tarefa E']
-# }
+grafo = {
+    'Tarefa A': ['Tarefa B', 'Tarefa C'],
+    'Tarefa B': ['Tarefa A', 'Tarefa D', 'Tarefa E'],
+    'Tarefa C': ['Tarefa A', 'Tarefa F'],
+    'Tarefa D': ['Tarefa B'],
+    'Tarefa E': ['Tarefa B', 'Tarefa F'],
+    'Tarefa F': ['Tarefa C', 'Tarefa E']
+}
 
 # problema_grafo = ProblemaComGrafo(grafo, 'Tarefa A', 'Tarefa F')
 # solucao = iterative_deepening_search(problema_grafo)

@@ -9,23 +9,13 @@ from problems import EightPuzzle
 from agent import Agent
 from solve import BFSStrategy, DFSStrategy
 
-# Importar algoritmos dos outros alunos
-from UCS import ucs_generica,problema_romania
+from UCS import ucs_generica,grafo_romania, ProblemaRomenia
 from DLS_recursiva import depth_limited_search, ProblemaComGrafo
-from IDS import iterative_deepening_search
+from IDS import iterative_deepening_search, grafo
 
 
 
 def main():
-
-    grafo = {
-    'Tarefa A': ['Tarefa B', 'Tarefa C'],
-    'Tarefa B': ['Tarefa A', 'Tarefa D', 'Tarefa E'],
-    'Tarefa C': ['Tarefa A', 'Tarefa F'],
-    'Tarefa D': ['Tarefa B'],
-    'Tarefa E': ['Tarefa B', 'Tarefa F'],
-    'Tarefa F': ['Tarefa C', 'Tarefa E']
-    }
 
     
     while True:
@@ -45,7 +35,7 @@ def main():
         elif op == '2':
             estrategia = DFSStrategy()
         elif op == '3':
-            caminho, custo_total = ucs_generica(problema_romania)
+            caminho, custo_total = ucs_generica(ProblemaRomenia(grafo_romania, 'Sibiu', 'Bucharest'))
             print(f"Caminho ótimo: {caminho}")
             print(f"Custo total: {custo_total}")
         elif op == '4':

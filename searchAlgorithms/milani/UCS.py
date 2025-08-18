@@ -59,7 +59,7 @@ grafo_romania = {
     'Bucharest': [('Fagaras', 211), ('Pitesti', 101)]
 }
 
-problema_romania = ProblemaRomenia(grafo_romania, 'Sibiu', 'Bucharest')
-caminho, custo_total = ucs_generica(problema_romania)
-print(f"Caminho ótimo: {caminho}")
-print(f"Custo total: {custo_total}")
+# problema_romania = ProblemaRomenia(grafo_romania, 'Sibiu', 'Bucharest')
+# caminho, custo_total = ucs_generica(problema_romania)
+# print(f"Caminho ótimo: {caminho}")
+# print(f"Custo total: {custo_total}")
