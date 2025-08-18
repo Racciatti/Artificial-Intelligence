@@ -62,15 +62,15 @@ class ProblemaComGrafo:
 
 
 ## PROBLEMA IGUAL O DO MILANI PARA TESTE    
-grafo = {
-    'A': ['B', 'C'],
-    'B': ['A', 'D', 'E'],
-    'C': ['A', 'F'],
-    'D': ['B'],
-    'E': ['B', 'F'],
-    'F': ['C', 'E']
-}
+# grafo = {
+#     'Tarefa A': ['Tarefa B', 'Tarefa C'],
+#     'Tarefa B': ['Tarefa A', 'Tarefa D', 'Tarefa E'],
+#     'Tarefa C': ['Tarefa A', 'Tarefa F'],
+#     'Tarefa D': ['Tarefa B'],
+#     'Tarefa E': ['Tarefa B', 'Tarefa F'],
+#     'Tarefa F': ['Tarefa C', 'Tarefa E']
+# }
 
-problema_grafo = ProblemaComGrafo(grafo, 'A', 'F')
-solucao = depth_limited_search(problema_grafo, 3)
-print(f"Caminho usando DLS (recursiva): {solucao}")
+# problema_grafo = ProblemaComGrafo(grafo, 'Tarefa A', 'Tarefa F')
+# solucao = depth_limited_search(problema_grafo, 3)
+# print(f"Caminho usando DLS (recursiva): {solucao}")
