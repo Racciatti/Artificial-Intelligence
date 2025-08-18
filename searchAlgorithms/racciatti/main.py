@@ -4,6 +4,9 @@ from solve import *
 
 agent = Agent()
 problem = EightPuzzle(verbose=True)
-strategy = BFSStrategy()
+strategy = DFSStrategy()
+
+
+
 
 print(agent.solve(problem, strategy))
