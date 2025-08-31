@@ -147,8 +147,6 @@ class LearnSnake:
         # death = -10 reward
         if self.game_close:
             reward = -10
-        else:
-            reward = -0.1  # small penalty for each move (encourages efficiency)
         self.survived += 1
         
         return self.get_state(), reward, self.game_close

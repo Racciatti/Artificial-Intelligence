@@ -68,19 +68,19 @@ python snakeql.py
 
 ### Sistema de Recompensas
 
-| Situação | Recompensa | Objetivo |
-|----------|------------|----------|
-| 🍎 **Comeu comida** | **+1** | Incentiva crescimento |
-| 👟 **Movimento normal** | **-0.1** | Promove eficiência |
-| 💀 **Morreu** | **-10** | Evita colisões |
+| Situação                | Recompensa | Objetivo                |
+| ----------------------- | ---------- | ----------------------- |
+| 🍎 **Comeu comida**     | **+1**     | Incentiva crescimento   |
+| 👟 **Movimento normal** | **0**      | Neutro (sem penalidade) |
+| 💀 **Morreu**           | **-10**    | Evita colisões          |
 
 ### Parâmetros de Treinamento
 
 ```python
-learning_rate = 0.9      # Taxa de aprendizado
-discount_rate = 0.9      # Fator de desconto
+learning_rate = 0.1      # Taxa de aprendizado
+discount_rate = 0.95     # Fator de desconto
 eps = 1.0               # Exploração inicial
-eps_discount = 0.9998   # Decaimento da exploração
+eps_discount = 0.9995   # Decaimento da exploração
 ```
 
 ## 🛠️ Tecnologias Utilizadas
