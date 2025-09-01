@@ -5,11 +5,12 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 # Defining test batch name
-TEST_NAME = 'test'
+TEST_NAME = 'learning_rate'
 
 # Defining which hyperparameters we want to test
 learning_rates = [0.001, 0.01, 0.1, 0.3, 0.8]
 epsilons = [0.3]
+epsilon_decays = [1]
 
 # Defining how many runs we want to do
 N_RUNS = 1
@@ -24,7 +25,8 @@ runner = MazeRunner(maze)
 agents = []
 for learning_rate in learning_rates:
     for epsilon in epsilons:
-        runner.add_agent(MazeAgent(alpha=learning_rate, gamma=1-learning_rate, epsilon=epsilon, game=maze))
+        for epsilon_decay in epsilon_decays:
+            runner.add_agent(MazeAgent(alpha=learning_rate, gamma=1-learning_rate, epsilon=epsilon, game=maze, epsilon_decay=epsilon_decay))
 
 # For each run
 for i in range(N_RUNS):
