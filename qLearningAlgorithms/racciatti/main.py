@@ -5,7 +5,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 # Defining test batch name
-TEST_NAME = 'zero_epsilon'
+TEST_NAME = 'learning_rate'
 
 # Defining which hyperparameters we want to test
 learning_rates = [0.001, 0.01, 0.1]
@@ -31,7 +31,7 @@ for learning_rate in learning_rates:
 # For each run
 for i in range(N_RUNS):
     # Run the algorithm
-    runner.run(200,5,TEST_NAME+str(i+1))
+    runner.run(400,5,TEST_NAME+str(i+1))
 
     # Save visualizations of the stored results
     runner.view(TEST_NAME+str(i+1))
