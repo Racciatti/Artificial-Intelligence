@@ -80,13 +80,11 @@ class MazeRunner(AbstractRunner):
 
         self.save_data(name)
 
-    def evaluate(self, prior, agent:MazeAgent, max_steps = 200):
+    def evaluate(self, prior, agent:MazeAgent, max_steps = 100):
         # Get euclidean distance between prior and current knowledge
         distances = []
         for state in agent.q_table:
             for action in agent.q_table[state]:
-                # print(agent.q_table[state][action])
-                # print(prior[state][action])
                 distances.append((agent.q_table[state][action] - prior[state][action])**2)
 
         final_distance = sqrt(sum(distances))
@@ -129,14 +127,21 @@ class MazeRunner(AbstractRunner):
         for agent in agents_data:
             plt.plot(agents_data[agent]['epochs_trained'], agents_data[agent]['knowledge_change'])
 
+        plt.title('Q Table change (euclidean distance between prior and posterior)')
         plt.legend([agent for agent in agents_data])
         plt.savefig('./images/'+run_name+'/'+'change.png')
         plt.clf()
         
         # Success or failure
-        for agent in agents_data:
-            plt.bar(agents_data[agent]['epochs_trained'], [1 if bool_value is True else 0 for bool_value in agents_data[agent]['success']])
 
+        # convolution kernel size:
+        kernel_size = 10
+        for agent in agents_data:
+            numerical_success = [1 if bool_value is True else 0 for bool_value in agents_data[agent]['success']]
+            avg_rate = [sum(numerical_success[i-kernel_size:i])/kernel_size for i in range(kernel_size,len(numerical_success))]
+            plt.plot(agents_data[agent]['epochs_trained'][10:], avg_rate)
+
+        plt.title(f'avg success rate across last {kernel_size} episodes')
         plt.legend([agent for agent in agents_data])
         plt.savefig('./images/'+run_name+'/'+'success.png')
         plt.clf()

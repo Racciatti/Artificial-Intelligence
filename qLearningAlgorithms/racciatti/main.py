@@ -5,11 +5,11 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 # Defining test batch name
-TEST_NAME = 'learning_rate'
+TEST_NAME = 'zero_epsilon'
 
 # Defining which hyperparameters we want to test
-learning_rates = [0.001, 0.01, 0.1, 0.3, 0.8]
-epsilons = [0.3]
+learning_rates = [0.001, 0.01, 0.1]
+epsilons = [0]
 epsilon_decays = [1]
 
 # Defining how many runs we want to do
