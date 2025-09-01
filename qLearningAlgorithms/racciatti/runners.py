@@ -141,14 +141,20 @@ class MazeRunner(AbstractRunner):
             avg_rate = [sum(numerical_success[i-kernel_size:i])/kernel_size for i in range(kernel_size,len(numerical_success))]
             plt.plot(agents_data[agent]['epochs_trained'][10:], avg_rate)
 
-        plt.title(f'avg success rate across last {kernel_size} episodes')
+        plt.title(f'avg success rate across last {kernel_size} tests')
         plt.legend([agent for agent in agents_data])
         plt.savefig('./images/'+run_name+'/'+'success.png')
         plt.clf()
-        # Steps taken
-        for agent in agents_data:
-            plt.plot(agents_data[agent]['epochs_trained'], agents_data[agent]['steps_taken'])
 
+
+        # Steps taken
+        kernel_size = 10
+        for agent in agents_data:
+            steps_taken = agents_data[agent]['steps_taken']
+            avg_steps = [sum(steps_taken[i-kernel_size:i] for i in range(kernel_size, len(steps_taken)))]
+            plt.plot(agents_data[agent]['epochs_trained'], avg_steps)
+
+        plt.title(f'avg steps taken across last {kernel_size} tests')
         plt.legend([agent for agent in agents_data])
         plt.savefig('./images/'+run_name+'/'+'steps_taken.png')
         plt.clf()
