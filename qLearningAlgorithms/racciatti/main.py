@@ -4,16 +4,20 @@ from runners import MazeRunner
 import pandas as pd
 from matplotlib import pyplot as plt
 
+# Small learning rate -> higher leads to faster convergence -> exploding it leads to better results ->
+# caveat: epsilon=0 and the environment is fixed. Therefore by increasing epsilon -> higher learning rate -> 
+# poor convergence (variability post convergence) -> with epsilon decay -> ...
+
 # Defining test batch name
-TEST_NAME = 'learning_rate'
+TEST_NAME = 'exploration_difference'
 
 # Defining which hyperparameters we want to test
-learning_rates = [0.001, 0.01, 0.1, 0.5]
-epsilons = [0]
+learning_rates = [ 0.1, 0.5]
+epsilons = [0.8,0.4,0.2]
 epsilon_decays = [1]
 
 # Defining how many runs we want to do
-N_RUNS = 1
+N_RUNS = 2
 
 # Creating game
 maze = MazeEnv(n=12,num_obstacles=20)

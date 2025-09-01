@@ -161,6 +161,4 @@ class MazeRunner(AbstractRunner):
 
 
 # TODO
-# definir melhor metrica para visualizar a mudança no conhecimento do agente
-# definir melhores e possivelmente outras visualizações para explorar os fenômenos que acontecem
 # com base nos resultados observados (e nos induzidos) gerar testes específicos para demonstrar por meio da visualização a teoria observada
