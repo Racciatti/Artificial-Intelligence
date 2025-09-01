@@ -1,3 +1,5 @@
+Contextualização de todos os trabalhos desenvolvidos, escolha do mais simples para fazer os testes: PoC. 
+
 Aqui temos uma visualização de quanto mudou a tabela de q learning do agente, ou seja, o quanto o 'conhecimento' que ele tem sobre as melhores ações a serem tomadas mudou.
 
 Para todos os casos, ocorre uma redução progressiva no aprendizado ao longo das épocas, já que o ambiente é novo para o agente.
@@ -26,4 +28,3 @@ Ao mesmo tempo em que o agente pode focar em exploitar o conhecimento já adquir
 Voltando ao exemplo da figura X, devido à alta taxa de exploração e de aprendizado do agente roxo, ele logo 'esqueceu' a solução que havia encontrado (memória fixa implica que aprendizado rápido leva ao esquecimento rápido, principalmente com uma alta taxa de exploração).
 
 Para evitar que isso aconteça com os agentes, a taxa de exploração é progressivamente diminuída ao longo dos passos (as vezes episódios) de treinamento. Dessa forma, a exploração é priorizada no início, e a exploitação predomina no fim.
-
