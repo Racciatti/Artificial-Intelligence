@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 TEST_NAME = 'learning_rate'
 
 # Defining which hyperparameters we want to test
-learning_rates = [0.001, 0.01, 0.1]
+learning_rates = [0.001, 0.01, 0.1, 0.5]
 epsilons = [0]
 epsilon_decays = [1]
 

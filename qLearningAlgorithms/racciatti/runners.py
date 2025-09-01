@@ -98,7 +98,7 @@ class MazeRunner(AbstractRunner):
             state, _, done = agent.env.step(action)
             steps+=1
         
-        return (final_distance, steps, True) if steps < 200 else (final_distance, steps, False)
+        return (final_distance, steps, True) if steps < 100 else (final_distance, steps, False)
 
 
     def log_batch(self, agent:MazeAgent, epochs:int, prior):
@@ -151,8 +151,8 @@ class MazeRunner(AbstractRunner):
         kernel_size = 10
         for agent in agents_data:
             steps_taken = agents_data[agent]['steps_taken']
-            avg_steps = [sum(steps_taken[i-kernel_size:i] for i in range(kernel_size, len(steps_taken)))]
-            plt.plot(agents_data[agent]['epochs_trained'], avg_steps)
+            avg_steps = [sum(steps_taken[i-kernel_size:i])/kernel_size for i in range(kernel_size, len(steps_taken))]
+            plt.plot(agents_data[agent]['epochs_trained'][10:], avg_steps)
 
         plt.title(f'avg steps taken across last {kernel_size} tests')
         plt.legend([agent for agent in agents_data])
