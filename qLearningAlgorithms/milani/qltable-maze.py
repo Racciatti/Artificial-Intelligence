@@ -69,7 +69,7 @@ class MazeEnv:
         time.sleep(0.8)
 
 
-def q_learning(env, episodes=500, alpha=0.1, gamma=0.9, epsilon=0.2): 
+def q_learning(env, episodes=2000, alpha=0.1, gamma=0.9, epsilon=0.2): 
     # episodes: n de tentativas
     # alpha: taxa de aprendizado, quando do novo alvo sobrepõe o valor antigo de Q (maior valor -> q antigo descartado e só o alvo novo conta.)
     # gamma: fator de desconto, quão importante é o futuro vs recompensa imediata (maior valor -> maior valorização de recompensas futuras)
@@ -111,7 +111,7 @@ def q_learning(env, episodes=500, alpha=0.1, gamma=0.9, epsilon=0.2):
 
 
 def main():
-    env = MazeEnv(n=6, num_obstacles=8)  
+    env = MazeEnv(n=12, num_obstacles=12)  
     q_table = q_learning(env)
 
  
