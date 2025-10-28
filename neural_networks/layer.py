@@ -14,6 +14,7 @@ class Layer:
     
     
     def activate(self, input:list=None):
+        if self.verbose: print('layer activated')
 
         # IF THIS IS AN INPUT LAYER
         if input is not None:
