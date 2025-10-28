@@ -26,6 +26,8 @@ class Neuron:
         self.axions = []
         self.bias = initial_bias
         self.verbose = verbose
+        self.preactivation = 0
+        self.activation = 0
     
     def add_dendrite(self, connection:Connection):
         self.dendrites.append(connection)
@@ -34,10 +36,10 @@ class Neuron:
         self.axions.append(connection)
 
     def activate(self):
-
-        activation = self.activation_function(sum(connection.activation for connection in self.dendrites) + self.bias)
+        self.preactivation = sum(connection.activation for connection in self.dendrites) + self.bias
+        self.activation = self.activation_function(self.preactivation)
 
         for axion in self.axions:
-            axion.fire(value=activation)
+            axion.fire(value=self.activation)
 
-        if self.verbose:(print(f'neuron activated with value {activation}'))
+        if self.verbose:(print(f'neuron activated with value {self.activation}'))
