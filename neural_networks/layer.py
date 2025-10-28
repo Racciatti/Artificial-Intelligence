@@ -19,7 +19,8 @@ class Layer:
         # IF THIS IS AN INPUT LAYER
         if input is not None:
             for i, neuron in enumerate(self.neurons):
+                neuron.activation = input[i]
                 for axion in neuron.axions:
-                    axion.fire(input[i])
+                    axion.fire(neuron.activation)
         else:
             for neuron in self.neurons: neuron.activate()

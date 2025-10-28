@@ -42,4 +42,5 @@ class Neuron:
         for axion in self.axions:
             axion.fire(value=self.activation)
 
-        if self.verbose:(print(f'neuron activated with value {self.activation}'))
+        if self.verbose:(print(f'preactivation: {self.preactivation}'))
+        if self.verbose:(print(f'activation: {self.activation}'))
