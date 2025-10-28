@@ -10,8 +10,8 @@ class Layer:
     def attach(self, target_layer):
         for origin_neuron in self.neurons:
             for target_neuron in target_layer.neurons:
-                print('connection created')
                 connection = Connection(origin_neuron,target_neuron)
+    
     
     def activate(self, input:list=None):
 

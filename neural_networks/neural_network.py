@@ -15,7 +15,7 @@ class NeuralNetwork:
     def connect_layers(self):
         layer_count = len(self.layers)
         for i in range(layer_count-1):
-            self.layers[i].attach(self.layers[i+1])
+            self.layers[i].attach(target_layer=self.layers[i+1])
 
 
     def build(self):

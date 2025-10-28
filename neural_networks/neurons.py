@@ -34,9 +34,10 @@ class Neuron:
         self.axions.append(connection)
 
     def activate(self):
-        if self.verbose:(print('neuron activated'))
 
         activation = self.activation_function(sum(connection.activation for connection in self.dendrites) + self.bias)
 
         for axion in self.axions:
             axion.fire(value=activation)
+
+        if self.verbose:(print(f'neuron activated with value {self.activation}'))
