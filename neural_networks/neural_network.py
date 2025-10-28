@@ -28,4 +28,19 @@ class NeuralNetwork:
         
         [self.layers[i].activate(input) if i == 0 else self.layers[i].activate() for i in range(len(self.layers))]
 
+    
+    def calculate_loss(self, target_output) -> float:
+        
+        predictions = [neuron.activation for neuron in self.layers[-1].neurons]
+
+        if len(predictions) != len(target_output):
+            raise ValueError('The output layer number of neurons does not match the number of expected outputs')
+
+        return (1/2) * sum([target_output[i]-predictions[i] for i in range(len(predictions))])
+    
+    def backward_pass(self, target_output):
+        predictions = [neuron.activation for neuron in self.layers[-1].neurons]
+
+        error_signals = predictions - target_output
+
 
