@@ -1,10 +1,11 @@
 from layer import Layer
 class NeuralNetwork:
 
-    def __init__(self, neurons_per_layer:list, activation_function, verbose:bool = False):
+    def __init__(self, neurons_per_layer:list, activation_function, activation_function_derivative, verbose:bool = False):
         self.verbose = verbose
         self.activation_function = activation_function
         self.neurons_per_layer = neurons_per_layer
+        self.activation_function_derivative = activation_function_derivative
         self.layers = []
         self.build()
 
