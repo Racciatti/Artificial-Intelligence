@@ -1,7 +1,8 @@
 from layer import Layer
 class NeuralNetwork:
 
-    def __init__(self, neurons_per_layer:list, activation_function):
+    def __init__(self, neurons_per_layer:list, activation_function, verbose:bool = False):
+        self.verbose = verbose
         self.activation_function = activation_function
         self.neurons_per_layer = neurons_per_layer
         self.layers = []
@@ -9,7 +10,7 @@ class NeuralNetwork:
 
     def create_layers(self):
         for neuron_count in self.neurons_per_layer:
-            self.layers.append(Layer(self.activation_function,neuron_count))
+            self.layers.append(Layer(self.activation_function,neuron_count, verbose = self.verbose))
 
     def connect_layers(self):
         layer_count = len(self.layers)
