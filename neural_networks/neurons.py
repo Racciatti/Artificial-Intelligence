@@ -1,6 +1,6 @@
 class Connection:
 
-    def __init__(self, start_neuron:'Neuron', end_neuron:'Neuron', initial_weight:float = 0, verbose:bool = False):
+    def __init__(self, start_neuron:'Neuron', end_neuron:'Neuron', initial_weight:float = 1, verbose:bool = False):
         self.start_neuron = start_neuron
         self.end_neuron = end_neuron
         self.weight = initial_weight

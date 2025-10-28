@@ -5,7 +5,7 @@ class NeuralNetwork:
         self.verbose = verbose
         self.activation_function = activation_function
         self.neurons_per_layer = neurons_per_layer
-        self.layers = []
+        self.layers = [Layer]
         self.build()
 
     def create_layers(self):
@@ -22,7 +22,7 @@ class NeuralNetwork:
         self.create_layers()
         self.connect_layers()
 
-    def feed(self, input):
+    def feed(self, input:list):
         self.layers[0].activate(input)
 
 
