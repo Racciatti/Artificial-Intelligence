@@ -36,7 +36,7 @@ class NeuralNetwork:
         if len(predictions) != len(target_output):
             raise ValueError('The output layer number of neurons does not match the number of expected outputs')
 
-        return (1/2) * sum([target_output[i]-predictions[i] for i in range(len(predictions))])
+        return (1/2) * sum([(target_output[i]-predictions[i])**2 for i in range(len(predictions))])
     
     
     
