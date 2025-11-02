@@ -26,32 +26,6 @@ xor_examples = [
 xor_targets = [0, 1, 1, 0]
 
 
-neuralNet = NeuralNetwork(neurons_per_layer=[2,1], activation_function=identity,verbose=True, activation_function_derivative=lambda x : 1)
+neuralNet = NeuralNetwork(neurons_per_layer=[2,1], activation_function=identity,verbose=False, activation_function_derivative=lambda x : 1)
 
-
-
-neuralNet.feed(or_examples[1][0:2])
-
-print(f"Loss: {neuralNet.calculate_loss([or_examples[1][2]])}")
-
-print()
-
-neuralNet.backpropagation([or_examples[1][2]], learning_rate = 0.1)
-
-# 2
-neuralNet.feed(or_examples[1][0:2])
-
-print(f"Loss: {neuralNet.calculate_loss([or_examples[1][2]])}")
-
-print()
-
-neuralNet.backpropagation([or_examples[1][2]], learning_rate = 0.1)
-
-# 3
-neuralNet.feed(or_examples[1][0:2])
-
-print(f"Loss: {neuralNet.calculate_loss([or_examples[1][2]])}")
-
-print()
-
-neuralNet.backpropagation([or_examples[1][2]], learning_rate = 0.1)
+neuralNet.train(or_examples, or_targets, 100, 0.01, True)

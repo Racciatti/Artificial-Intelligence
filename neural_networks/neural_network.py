@@ -39,7 +39,7 @@ class NeuralNetwork:
     
     
     
-    def backpropagation(self, target_output:list, learning_rate:float):
+    def backpropagation(self, target_output:list, learning_rate:float, verbose:bool = False):
 
         # Fetch last layer
         last_layer_neurons = self.layers[-1].neurons
@@ -52,7 +52,6 @@ class NeuralNetwork:
         # Use the error signals and the chain rule to compute the weight change for the last layer
 
         # For each output neuron
-
         for i, neuron in enumerate(last_layer_neurons):
 
             # Each neuron has one bias, but can have multiple connections. 
@@ -65,25 +64,21 @@ class NeuralNetwork:
 
                 # DelC/Delw = a(l-1) * activation_funcion_derivative * error_signals
                 weight_gradient = dendrite.start_neuron.activation * self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signals[i]
-                print(f"old weight: {dendrite.weight}")
-                print(f"weight gradient: {weight_gradient}")
-
+                if verbose: print(f"old weight: {dendrite.weight}")
+                dendrite.weight -= learning_rate * weight_gradient
+                if verbose: print(f"new weight: {dendrite.weight}")
                 # In the case of bias, we may have multiple 
                 # Delc/Delb = 1 * activation_funcion_derivative * error_signals
                 bias_gradients.append(self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signals[i])
 
+
                 # Delc/Dela = w(l) * activation_funcion_derivative * error_signals
                 # ---
-
-                # Update the weight, since for each connection to a last layer neuron there only needs to be one calculation
-                dendrite.weight -= learning_rate * weight_gradient
-                print(f"new weight: {dendrite.weight}")
             
             mean_bias_gradient = sum(bias_gradients)/len(bias_gradients)
-            print(f"mean bias gradient: {mean_bias_gradient}")
-
-            neuron.bias -= mean_bias_gradient
-
+            if verbose: print(f"old bias: {neuron.bias}")
+            neuron.bias -= learning_rate * mean_bias_gradient
+            if verbose: print(f"new bias: {neuron.bias}")
 
         # For each weight in the last layer
 
@@ -95,8 +90,17 @@ class NeuralNetwork:
         if len(examples) != len(targets):
             raise ValueError('')
         
+        for i in range(epochs):
+            print(f"epoch {i}".upper())
+            loss = []
+            for example, target in zip(examples,targets):
+                self.feed(example)
+                self.backpropagation([target], learning_rate=learning_rate)
 
-        for example, target in zip(examples,targets):
+                loss.append(self.calculate_loss([target]))
+            
+            print(f" LOSS: {sum(loss)/len(loss)}")
 
-            self.feed(example)
-            self.backpropagation([target], learning_rate = learning_rate)
+
+
+                
