@@ -17,6 +17,13 @@ xor_examples = [
     [1,1,0]
     ]
 
-neuralNet = NeuralNetwork(neurons_per_layer=[3,2,1], activation_function=identity,verbose=True)
+neuralNet = NeuralNetwork(neurons_per_layer=[3,2,1], activation_function=identity,verbose=True, activation_function_derivative=1)
 
-neuralNet.feed([i for i in range(3)])
+
+for example in xor_examples:
+
+    neuralNet.feed([i for i in range(3)])
+
+    # get loss
+
+    # run backprop

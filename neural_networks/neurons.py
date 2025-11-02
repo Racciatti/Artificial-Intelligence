@@ -20,10 +20,9 @@ class Connection:
 
 class Neuron:
 
-    def __init__(self, activation_function, activation_function_derivative, initial_bias:float = 0, verbose:bool = False):
+    def __init__(self, activation_function, initial_bias:float = 0, verbose:bool = False):
 
         self.activation_function = activation_function
-        self.activation_function_derivative = activation_function_derivative
         self.bias = initial_bias
         self.verbose = verbose
 

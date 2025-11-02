@@ -2,10 +2,9 @@ from neurons import Neuron, Connection
 
 class Layer:
 
-    def __init__(self, activation_function, activation_function_derivative, width:int, verbose:bool = False):
+    def __init__(self, activation_function, width:int, verbose:bool = False):
         self.verbose = verbose
         self.width = width
-        self.activation_function_derivative = activation_function_derivative
         self.neurons = [Neuron(activation_function=activation_function, verbose=self.verbose) for _ in range(self.width)]
 
     def attach(self, target_layer):
@@ -14,11 +13,11 @@ class Layer:
                 connection = Connection(origin_neuron,target_neuron)
     
     
-    def activate(self, input:list=None):
+    def activate(self, input:list= []):
         if self.verbose: print('layer activated')
 
         # IF THIS IS AN INPUT LAYER
-        if input is not None:
+        if input != []:
             for i, neuron in enumerate(self.neurons):
                 neuron.activation = input[i]
                 for axion in neuron.axions:

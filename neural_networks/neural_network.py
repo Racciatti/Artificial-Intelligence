@@ -38,9 +38,22 @@ class NeuralNetwork:
 
         return (1/2) * sum([target_output[i]-predictions[i] for i in range(len(predictions))])
     
-    def backward_pass(self, target_output):
+    
+    
+    def backpropagation(self, target_output):
+
+        # Get the error signals
         predictions = [neuron.activation for neuron in self.layers[-1].neurons]
 
         error_signals = predictions - target_output
 
+        # Use the error signals and the chain rule to compute the weight change for the last layer
+
+        # DelC/Delw = delz/delw * dela/delz * delc/dela
+
+        # a(l-1) * activation_funcion_derivative * error_signals
+
+        # For each weight in the last layer
+
+        # Use the chain rule sucessively based on the activation gradient
 
