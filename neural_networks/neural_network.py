@@ -42,38 +42,38 @@ class NeuralNetwork:
         Compute the gradient for the weights and biases using the backpropagation algorithm
         """
 
-
-        # Fetch last layer
-        last_layer_neurons = self.layers[-1].neurons
-
-        # Get the error signals
-        predictions = [neuron.activation for neuron in last_layer_neurons]
-        print(predictions)
-        print(target_output)
-        error_signals = list(map(lambda x, y:x-y, predictions, target_output))
-
-        # Use the error signals and the chain rule to compute the weight change for the last layer
-
-        # For each output neuron
-        for error_signal, neuron in zip(error_signals, last_layer_neurons):
-            # For each connection into that output neuron
+        # From the last layer up to the second one
+        for layer in self.layers[:0:-1]:
             
-            
-            for dendrite in neuron.dendrites:
-
-                weight_gradient = dendrite.start_neuron.activation * self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal
-                if verbose: print(f"old weight: {dendrite.weight}")
+            # If this is the last layer, we need to get the error signals
+            if layer == self.layers[-1]:
                 
-                dendrite.weight -= learning_rate * weight_gradient
-                if verbose: print(f"new weight: {dendrite.weight}")
+
+                # Get the error signals
+                predictions = [neuron.activation for neuron in layer.neurons]
+                error_signals = list(map(lambda x, y:x-y, predictions, target_output))
+
+                # Use the error signals and the chain rule to compute the weight change for the last layer
+
+                # For each output neuron
+                for error_signal, neuron in zip(error_signals, layer.neurons):
+                    
+                    # For each connection into that output neuron
+                    for dendrite in neuron.dendrites:
+                        
+                        # Get its weight gradient and update it
+                        weight_gradient = dendrite.start_neuron.activation * self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal
+                        if verbose: print(f"old weight: {dendrite.weight}")
+                        dendrite.weight -= learning_rate * weight_gradient
+                        if verbose: print(f"new weight: {dendrite.weight}")
 
 
-            # Compute the bias gradient and update accordingly
-            bias_gradient = self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal
-            if verbose: print(f"old bias: {neuron.bias}")
-            neuron.bias -= learning_rate * bias_gradient
-            if verbose: print(f"new bias: {neuron.bias}")
-    
+                    # Get the bias' gradient and update it
+                    bias_gradient = self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal
+                    if verbose: print(f"old bias: {neuron.bias}")
+                    neuron.bias -= learning_rate * bias_gradient
+                    if verbose: print(f"new bias: {neuron.bias}")
+
 
     def train(self, examples:list, targets:list, epochs:int, learning_rate:float, verbose:bool):
 
