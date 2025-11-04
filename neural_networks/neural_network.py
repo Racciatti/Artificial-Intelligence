@@ -37,47 +37,43 @@ class NeuralNetwork:
 
         return (1/2) * sum([(target_output[i]-predictions[i])**2 for i in range(len(predictions))])
     
-    
-    
     def backpropagation(self, target_output:list, learning_rate:float, verbose:bool = False):
+        """
+        Compute the gradient for the weights and biases using the backpropagation algorithm
+        """
 
         # Fetch last layer
         last_layer_neurons = self.layers[-1].neurons
 
         # Get the error signals
         predictions = [neuron.activation for neuron in last_layer_neurons]
-
         error_signals = list(map(lambda x, y:x-y, predictions, target_output))
 
         # Use the error signals and the chain rule to compute the weight change for the last layer
 
         # For each output neuron
-        for i, neuron in enumerate(last_layer_neurons):
-
-            # Each neuron has one bias, but can have multiple connections. 
-            # Hence, in order to compute the bias gradient we need to take its average
-            bias_gradients = []
-
+        for error_signal, neuron in zip(error_signals, last_layer_neurons):
             # For each connection into that output neuron
+            
+            
             for dendrite in neuron.dendrites:
                 # DelC/Delw = delz/delw * dela/delz * delc/dela
 
                 # DelC/Delw = a(l-1) * activation_funcion_derivative * error_signals
-                weight_gradient = dendrite.start_neuron.activation * self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signals[i]
+                weight_gradient = dendrite.start_neuron.activation * self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal
                 if verbose: print(f"old weight: {dendrite.weight}")
                 dendrite.weight -= learning_rate * weight_gradient
                 if verbose: print(f"new weight: {dendrite.weight}")
                 # In the case of bias, we may have multiple 
                 # Delc/Delb = 1 * activation_funcion_derivative * error_signals
-                bias_gradients.append(self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signals[i])
-
 
                 # Delc/Dela = w(l) * activation_funcion_derivative * error_signals
                 # ---
-            
-            mean_bias_gradient = sum(bias_gradients)/len(bias_gradients)
+
+            # Compute the bias gradient and update accordingly
+            bias_gradient = self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal
             if verbose: print(f"old bias: {neuron.bias}")
-            neuron.bias -= learning_rate * mean_bias_gradient
+            neuron.bias -= learning_rate * bias_gradient
             if verbose: print(f"new bias: {neuron.bias}")
 
         # For each weight in the last layer
