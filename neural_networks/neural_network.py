@@ -61,29 +61,26 @@ class NeuralNetwork:
                 for error_signal, neuron in zip(error_signals, layer.neurons):
                     neuron_activation_gradients = []
                     
+                    neuron_delta = error_signal * self.activation_function_derivative(neuron.preactivation)
+
                     # For each connection into that output neuron
                     for dendrite in neuron.dendrites:
                         
                         # Get its weight gradient and update it
-                        weight_gradient = dendrite.start_neuron.activation * self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal
-                        if verbose: print(f"old weight: {dendrite.weight}")
+                        weight_gradient = dendrite.start_neuron.activation * neuron_delta
                         dendrite.weight -= learning_rate * weight_gradient
-                        if verbose: print(f"new weight: {dendrite.weight}")
 
                         # Get the connected neuron's activation gradient and store it
-                    
-                    neuron_activation_gradients.append(dendrite.weight * self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal)
+                        neuron_activation_gradients.append(dendrite.weight * neuron_delta)
 
                     # Store the gradients associated with the connections of a given neuron
                     activation_gradients.append(neuron_activation_gradients)
 
-                    # Get the bias' gradient and update it
-                    bias_gradient = self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal
-                    if verbose: print(f"old bias: {neuron.bias}")
+                    
+                    bias_gradient = neuron_delta
                     neuron.bias -= learning_rate * bias_gradient
-                    if verbose: print(f"new bias: {neuron.bias}")
 
-           # If this is not the last layer
+           # If this is not the last layer (i.e., a hidden layer)
             else:
                 # Facilitate traversal
                 current_activation_gradients_matrix = np.transpose(activation_gradients)
@@ -91,12 +88,15 @@ class NeuralNetwork:
 
                 for current_w_delta_terms, neuron in zip(current_activation_gradients_matrix, layer.neurons):
                     
-                    # Sum of weighted errors
+                    # Sum of weighted errors (deltas) from the *next* layer
                     sum_weighted_error = sum(current_w_delta_terms) 
+                    
+                    # This neuron's delta (error signal)
                     neuron_error_signal = sum_weighted_error * self.activation_function_derivative(neuron.preactivation)
                     
                     new_activation_gradients_for_previous_layer = []
                     
+                    # Update bias
                     bias_gradient = neuron_error_signal
                     neuron.bias -= learning_rate * bias_gradient
 
@@ -106,6 +106,7 @@ class NeuralNetwork:
                         weight_gradient = dendrite.start_neuron.activation * neuron_error_signal
                         dendrite.weight -= learning_rate * weight_gradient
 
+                        # Propagate the error term for the *next* iteration (the layer before this one)
                         new_activation_gradients_for_previous_layer.append(dendrite.weight * neuron_error_signal)
 
                     activation_gradients.append(new_activation_gradients_for_previous_layer)
