@@ -1,9 +1,11 @@
+import numpy as np
+
 class Connection:
 
-    def __init__(self, start_neuron:'Neuron', end_neuron:'Neuron', initial_weight:float = 0.5 , verbose:bool = False):
+    def __init__(self, start_neuron:'Neuron', end_neuron:'Neuron', initial_weight:float = None , verbose:bool = False):
         self.start_neuron = start_neuron
         self.end_neuron = end_neuron
-        self.weight = initial_weight
+        self.weight = np.random.randn() * 0.1 if initial_weight is None else initial_weight
         self.verbose = verbose
 
         self.activation = 0
