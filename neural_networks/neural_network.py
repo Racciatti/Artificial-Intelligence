@@ -43,8 +43,8 @@ class NeuralNetwork:
         """
         Compute the gradient for the weights and biases using the backpropagation algorithm
         """
+        activation_gradients = []
 
-        activation_gradients_per_neuron = []
         # From the last layer up to the second one
         for i, layer in enumerate(self.layers[:0:-1]):
 
@@ -59,7 +59,7 @@ class NeuralNetwork:
 
                 # For each output neuron
                 for error_signal, neuron in zip(error_signals, layer.neurons):
-                    activation_gradients = []
+                    neuron_activation_gradients = []
                     
                     # For each connection into that output neuron
                     for dendrite in neuron.dendrites:
@@ -71,10 +71,11 @@ class NeuralNetwork:
                         if verbose: print(f"new weight: {dendrite.weight}")
 
                         # Get the connected neuron's activation gradient and store it
-                        activation_gradients.append(dendrite.weight * self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal)
+                    
+                    neuron_activation_gradients.append(dendrite.weight * self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal)
 
                     # Store the gradients associated with the connections of a given neuron
-                    activation_gradients_per_neuron.append(activation_gradients)
+                    activation_gradients.append(neuron_activation_gradients)
 
                     # Get the bias' gradient and update it
                     bias_gradient = self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal
@@ -82,19 +83,32 @@ class NeuralNetwork:
                     neuron.bias -= learning_rate * bias_gradient
                     if verbose: print(f"new bias: {neuron.bias}")
 
-            # If this is not the last layer
+           # If this is not the last layer
             else:
-                # Manipulate the stored activation's so they have a better format for traversal (transposing)
-                print(activation_gradients_per_neuron)
-                current_activation_gradients = np.transpose(activation_gradients_per_neuron)
-                print(current_activation_gradients)
-                
-                # For each neuron in the current layer 
+                # Facilitate traversal
+                current_activation_gradients_matrix = np.transpose(activation_gradients)
+                activation_gradients = []
 
-                # Compute the gradient updates
+                for current_w_delta_terms, neuron in zip(current_activation_gradients_matrix, layer.neurons):
+                    
+                    # Sum of weighted errors
+                    sum_weighted_error = sum(current_w_delta_terms) 
+                    neuron_error_signal = sum_weighted_error * self.activation_function_derivative(neuron.preactivation)
+                    
+                    new_activation_gradients_for_previous_layer = []
+                    
+                    bias_gradient = neuron_error_signal
+                    neuron.bias -= learning_rate * bias_gradient
 
-                # Store the next layer's neurons' activation gradients
-                pass
+                    for dendrite in neuron.dendrites:
+                        
+                        # Get its weight gradient and update it
+                        weight_gradient = dendrite.start_neuron.activation * neuron_error_signal
+                        dendrite.weight -= learning_rate * weight_gradient
+
+                        new_activation_gradients_for_previous_layer.append(dendrite.weight * neuron_error_signal)
+
+                    activation_gradients.append(new_activation_gradients_for_previous_layer)
                 
 
 
@@ -115,14 +129,6 @@ class NeuralNetwork:
                 loss.append(self.calculate_loss(target))
     
             print(f" LOSS: {sum(loss)/len(loss)}")
-
-        print('Final weights:')
-        neuron_dendrites = [neuron.dendrites for neuron in self.layers[-1].neurons]
-        for i, neuron in enumerate(neuron_dendrites):
-            print(f'neuron {i}')
-            for j, dendrite in enumerate(neuron):
-                print(f'dendrite {j}')
-                print(dendrite.weight)
         
 
 
