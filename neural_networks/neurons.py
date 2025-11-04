@@ -22,7 +22,7 @@ class Connection:
 
 class Neuron:
 
-    def __init__(self, activation_function, initial_bias:float = 0, verbose:bool = False):
+    def __init__(self, activation_function, initial_bias:float = 0.1, verbose:bool = False):
 
         self.activation_function = activation_function
         self.bias = initial_bias
