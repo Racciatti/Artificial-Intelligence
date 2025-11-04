@@ -1,4 +1,6 @@
 from layer import Layer
+import numpy as np
+
 class NeuralNetwork:
 
     def __init__(self, neurons_per_layer:list, activation_function, activation_function_derivative, verbose:bool = False):
@@ -42,21 +44,22 @@ class NeuralNetwork:
         Compute the gradient for the weights and biases using the backpropagation algorithm
         """
 
+        activation_gradients_per_neuron = []
         # From the last layer up to the second one
-        for layer in self.layers[:0:-1]:
+        for i, layer in enumerate(self.layers[:0:-1]):
+
             
             # If this is the last layer, we need to get the error signals
-            if layer == self.layers[-1]:
-                
+            if i == 0:
+                print('CALLED')
 
                 # Get the error signals
                 predictions = [neuron.activation for neuron in layer.neurons]
                 error_signals = list(map(lambda x, y:x-y, predictions, target_output))
 
-                # Use the error signals and the chain rule to compute the weight change for the last layer
-
                 # For each output neuron
                 for error_signal, neuron in zip(error_signals, layer.neurons):
+                    activation_gradients = []
                     
                     # For each connection into that output neuron
                     for dendrite in neuron.dendrites:
@@ -67,12 +70,32 @@ class NeuralNetwork:
                         dendrite.weight -= learning_rate * weight_gradient
                         if verbose: print(f"new weight: {dendrite.weight}")
 
+                        # Get the connected neuron's activation gradient and store it
+                        activation_gradients.append(dendrite.weight * self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal)
+
+                    # Store the gradients associated with the connections of a given neuron
+                    activation_gradients_per_neuron.append(activation_gradients)
 
                     # Get the bias' gradient and update it
                     bias_gradient = self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal
                     if verbose: print(f"old bias: {neuron.bias}")
                     neuron.bias -= learning_rate * bias_gradient
                     if verbose: print(f"new bias: {neuron.bias}")
+
+            # If this is not the last layer
+            else:
+                # Manipulate the stored activation's so they have a better format for traversal (transposing)
+                print(activation_gradients_per_neuron)
+                current_activation_gradients = np.transpose(activation_gradients_per_neuron)
+                print(current_activation_gradients)
+                
+                # For each neuron in the current layer 
+
+                # Compute the gradient updates
+
+                # Store the next layer's neurons' activation gradients
+                pass
+                
 
 
     def train(self, examples:list, targets:list, epochs:int, learning_rate:float, verbose:bool):
