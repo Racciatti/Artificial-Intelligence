@@ -42,11 +42,14 @@ class NeuralNetwork:
         Compute the gradient for the weights and biases using the backpropagation algorithm
         """
 
+
         # Fetch last layer
         last_layer_neurons = self.layers[-1].neurons
 
         # Get the error signals
         predictions = [neuron.activation for neuron in last_layer_neurons]
+        print(predictions)
+        print(target_output)
         error_signals = list(map(lambda x, y:x-y, predictions, target_output))
 
         # Use the error signals and the chain rule to compute the weight change for the last layer
@@ -57,28 +60,19 @@ class NeuralNetwork:
             
             
             for dendrite in neuron.dendrites:
-                # DelC/Delw = delz/delw * dela/delz * delc/dela
 
-                # DelC/Delw = a(l-1) * activation_funcion_derivative * error_signals
                 weight_gradient = dendrite.start_neuron.activation * self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal
                 if verbose: print(f"old weight: {dendrite.weight}")
+                
                 dendrite.weight -= learning_rate * weight_gradient
                 if verbose: print(f"new weight: {dendrite.weight}")
-                # In the case of bias, we may have multiple 
-                # Delc/Delb = 1 * activation_funcion_derivative * error_signals
 
-                # Delc/Dela = w(l) * activation_funcion_derivative * error_signals
-                # ---
 
             # Compute the bias gradient and update accordingly
             bias_gradient = self.activation_function_derivative(dendrite.start_neuron.preactivation) * error_signal
             if verbose: print(f"old bias: {neuron.bias}")
             neuron.bias -= learning_rate * bias_gradient
             if verbose: print(f"new bias: {neuron.bias}")
-
-        # For each weight in the last layer
-
-        # Use the chain rule sucessively based on the activation gradient
     
 
     def train(self, examples:list, targets:list, epochs:int, learning_rate:float, verbose:bool):
@@ -88,14 +82,25 @@ class NeuralNetwork:
         
         for i in range(epochs):
             print(f"epoch {i}".upper())
+            
             loss = []
+
             for example, target in zip(examples,targets):
                 self.feed(example)
-                self.backpropagation([target], learning_rate=learning_rate)
+                self.backpropagation(target, learning_rate=learning_rate)
 
-                loss.append(self.calculate_loss([target]))
-            
+                loss.append(self.calculate_loss(target))
+    
             print(f" LOSS: {sum(loss)/len(loss)}")
+
+        print('Final weights:')
+        neuron_dendrites = [neuron.dendrites for neuron in self.layers[-1].neurons]
+        for i, neuron in enumerate(neuron_dendrites):
+            print(f'neuron {i}')
+            for j, dendrite in enumerate(neuron):
+                print(f'dendrite {j}')
+                print(dendrite.weight)
+        
 
 
 
