@@ -41,6 +41,6 @@ xor_examples = [
 xor_targets = [[0], [1], [1], [0]]
 
 
-neuralNet = NeuralNetwork(neurons_per_layer=[2,2,1], activation_function=identity,verbose=False, activation_function_derivative=lambda x: 1)
+neuralNet = NeuralNetwork(neurons_per_layer=[2,5,5,1], activation_function=identity,verbose=False, activation_function_derivative=lambda x: 1)
 
-neuralNet.train(examples=xor_examples, targets=xor_targets, epochs=10, learning_rate=0.001, verbose=True)
+neuralNet.train(examples=xor_examples, targets=xor_targets, epochs=1000, learning_rate=0.001, verbose=True)
