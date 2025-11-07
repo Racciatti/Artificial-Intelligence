@@ -129,6 +129,10 @@ class NeuralNetwork:
                 loss.append(self.calculate_loss(target))
     
             print(f" LOSS: {sum(loss)/len(loss)}")
+    
+    def predict(self, input:list):
+        self.feed(input)
+        return [neuron.activation for neuron in self.layers[-1].neurons]
         
 
 
