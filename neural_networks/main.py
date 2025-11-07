@@ -3,10 +3,10 @@ from layer import Layer
 from neural_network import NeuralNetwork
 
 # Activation functions
-relu = lambda x : max(0,x)
 identity = lambda x: x
 square = lambda x: x**2
-der_relu = lambda x : 1 if x > 0 else 0
+leaky_relu = lambda x: x if x > 0 else 0.01 * x
+der_leaky_relu = lambda x: 1 if x > 0 else 0.01
 
 # TESTS
 # 2,1 net
@@ -32,7 +32,7 @@ extended_or_targets = [
     [0,0,1]
     ]
 
-xor_examples = [
+xor_examples = [ # LOSS: 4.785805690948886e-21
     [0,0],
     [0,1],
     [1,0],
@@ -40,7 +40,6 @@ xor_examples = [
     ]
 xor_targets = [[0], [1], [1], [0]]
 
+neuralNet = NeuralNetwork(neurons_per_layer=[2,6,1], activation_function=leaky_relu,verbose=False, activation_function_derivative=der_leaky_relu)
 
-neuralNet = NeuralNetwork(neurons_per_layer=[2,5,5,1], activation_function=identity,verbose=False, activation_function_derivative=lambda x: 1)
-
-neuralNet.train(examples=xor_examples, targets=xor_targets, epochs=1000, learning_rate=0.001, verbose=True)
+neuralNet.train(examples=xor_examples, targets=xor_targets, epochs=50000, learning_rate=0.001, verbose=True)

@@ -51,7 +51,6 @@ class NeuralNetwork:
             
             # If this is the last layer, we need to get the error signals
             if i == 0:
-                print('CALLED')
 
                 # Get the error signals
                 predictions = [neuron.activation for neuron in layer.neurons]
