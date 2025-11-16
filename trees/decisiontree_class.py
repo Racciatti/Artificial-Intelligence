@@ -17,11 +17,40 @@
 # threshold = {v_i + v_{i+1}}/2 
 # Utiliza a média entre valores consecutivos
 
-class ArvoreDecisaoClassificador:
-    def __init__(self):
-        pass
+def calcular_gini(y):
+    """
+    Função para calcular o Gini de um vetor de rótulos, características, classes que temos no conjunto
+    Gini = 1 - somatório das proporções ao quadrado
 
-    def criterio_parada(criterio: int):
+    Parameters 
+    ----------
+    y: 
+        Vetor de rótulos com as classes
+
+    Returns
+    -------
+    gini: float
+        Valor do gini daquela classe. Indica a "impureza" dos dados, ou seja, se os dados ainda podem ser separados.
+
+    """
+    # proporção é a quantidade de exemplos da classe i pelo total de exemplos 
+    total = len(y)
+    proporcao = {}
+
+    for caracteristica in y: 
+        if caracteristica not in proporcao:
+            proporcao[caracteristica] = 0
+        proporcao[caracteristica] += 1
+    
+    for classe in proporcao:
+        proporcao[classe] /= total
+
+
+    gini = 1 - sum(proporcao[classe]**2)
+
+    return gini
+
+def criterio_parada(criterio: int):
         if criterio == 1:
             print("mesma classe")
             return 1
@@ -31,9 +60,13 @@ class ArvoreDecisaoClassificador:
         elif criterio == 3:
             print("melhoria de Gini")
             return 3
+
+class ArvoreDecisaoClassificador:
+    def __init__(self):
+        pass
+
         
-    def melhor_gini():
-        return True
+
 
     def encontrar_melhor_split(X, y):
         pass
@@ -48,7 +81,7 @@ class ArvoreDecisaoClassificador:
         X: np.array
             Matriz de atributos, ou seja, features
         y: np.array
-            Vetro de rótulos. Quantidade de classes.
+            Vetor de rótulos. Quantidade de classes.
         profundidae: int 
             Profundidade da árvore. Pode ser opcional, porque depende do critério de parada
         
