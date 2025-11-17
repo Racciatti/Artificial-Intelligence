@@ -98,9 +98,23 @@ def dividir_dataset(X, y, atributo, threshold):
 
     return X_dir, X_esq, y_dir, y_esq
 
-def calcular_gini_split(y_esq, y_dir):_
+def calcular_gini_split(y_esq, y_dir):
+    # 1° passo - calcular o gini de cada grupo    
+    gini_esq = calcular_gini(y_esq)
+    gini_dir = calcular_gini(y_dir)
 
-    pass
+    # 2° passo - calcular o tamanho (para usar na fórmula depois)
+    tam_esq, tam_dir = len(gini_esq), len(gini_dir) 
+    tam_total = tam_esq, tam_dir
+
+    # 3° passo - gini ponderaod 
+    # esq/total * gini da esquerda + dir/total gini da direita
+    gini_split = (tam_esq/tam_total) * gini_esq + (tam_dir/tam_total)/gini_dir
+
+    # quanto menor o gini melhor
+    return gini_split
+
+    
 
 def melhor_split():
     pass
