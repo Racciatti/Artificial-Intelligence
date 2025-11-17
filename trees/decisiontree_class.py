@@ -17,6 +17,8 @@
 # threshold = {v_i + v_{i+1}}/2 
 # Utiliza a média entre valores consecutivos
 
+import numpy as np
+
 def calcular_gini(y):
     """
     Função para calcular o Gini de um vetor de rótulos, características, classes que temos no conjunto
@@ -49,6 +51,61 @@ def calcular_gini(y):
     gini = 1 - sum(proporcao[classe]**2)
 
     return gini
+
+def dividir_dataset(X, y, atributo, threshold): 
+    """
+    Receber um atributo e atribuir um ponto de corte, isto é, retornar um grupo a direita e a esquerda do threshold 
+
+    Parameters 
+    ----------
+    X: np.array
+        Matriz de atributos
+    y: 
+        rótulos 
+    atributo:
+        índice da coluna 
+    threshold: 
+        ponto de corte; valor usado para dividir a função em duas
+
+
+    Returns 
+    -------
+    y_esq:
+    y_dir:
+
+    """
+
+    # 1° passo - criar listas para dividir em dois grupos
+    X_esq = []
+    X_dir = []
+    y_esq = []
+    y_dir = []
+
+
+    # 2° passo - percorrer o dataset
+    for item in X:
+        # se for numérico 
+        if X[item][atributo] < threshold: 
+            X_esq.append(X[item][atributo])
+        else:
+            X_dir.append(X[item][atributo])
+
+        # Se for categório
+        if X[item][atributo] == threshold:
+            X_esq.append(X[item][atributo])
+        else:
+            X_dir.append(X[item][atributo])
+
+    return X_dir, X_esq, y_dir, y_esq
+
+def calcular_gini_split(y_esq, y_dir):_
+
+    pass
+
+def melhor_split():
+    pass
+
+
 
 def criterio_parada(criterio: int):
         if criterio == 1:
