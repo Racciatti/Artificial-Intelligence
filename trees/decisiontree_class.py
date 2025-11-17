@@ -40,15 +40,13 @@ def calcular_gini(y):
     proporcao = {}
 
     for caracteristica in y: 
-        if caracteristica not in proporcao:
-            proporcao[caracteristica] = 0
-        proporcao[caracteristica] += 1
+        proporcao[caracteristica] = proporcao.get(classe, 0) + 1
     
     for classe in proporcao:
         proporcao[classe] /= total
 
 
-    gini = 1 - sum(proporcao[classe]**2)
+    gini = 1 - sum(p**2 for p in proporcao.values())
 
     return gini
 
@@ -70,8 +68,14 @@ def dividir_dataset(X, y, atributo, threshold):
 
     Returns 
     -------
-    y_esq:
-    y_dir:
+    X_esq: list
+        subconjunto de atributos do lado esquerdo do split
+    y_esq: list
+            Rótulos que estão do lado ESQUERDO do split
+    X_dir: list 
+        Subconjunto de atributos do lado DIREITO do split
+    y_dir: list 
+        Rótulos que estão do lado DIREITO do split
 
     """
 
@@ -83,20 +87,22 @@ def dividir_dataset(X, y, atributo, threshold):
 
 
     # 2° passo - percorrer o dataset
-    for item in X:
+    for i in range(len(X)):
         # se for numérico 
-        if X[item][atributo] < threshold: 
-            X_esq.append(X[item][atributo])
+        if X[i][atributo] < threshold: 
+            X_esq.append(X[i])
+            y_esq.append[y[i]]
         else:
-            X_dir.append(X[item][atributo])
+            X_dir.append(X[i])
+            y_dir.append[y[i]]
 
         # Se for categório
-        if X[item][atributo] == threshold:
-            X_esq.append(X[item][atributo])
-        else:
-            X_dir.append(X[item][atributo])
+        # if X[i][atributo] == threshold:
+        #     X_esq.append(X[i])
+        # else:
+        #     X_dir.append(X[i])
 
-    return X_dir, X_esq, y_dir, y_esq
+    return X_esq, y_esq, X_dir, y_dir
 
 def calcular_gini_split(y_esq, y_dir):
     # 1° passo - calcular o gini de cada grupo    
@@ -104,12 +110,13 @@ def calcular_gini_split(y_esq, y_dir):
     gini_dir = calcular_gini(y_dir)
 
     # 2° passo - calcular o tamanho (para usar na fórmula depois)
-    tam_esq, tam_dir = len(gini_esq), len(gini_dir) 
-    tam_total = tam_esq, tam_dir
+    tam_esq = len(y_esq)
+    tam_dir = len(y_dir) 
+    tam_total = tam_esq + tam_dir
 
     # 3° passo - gini ponderaod 
     # esq/total * gini da esquerda + dir/total gini da direita
-    gini_split = (tam_esq/tam_total) * gini_esq + (tam_dir/tam_total)/gini_dir
+    gini_split = (tam_esq/tam_total) * gini_esq + (tam_dir/tam_total) * gini_dir
 
     # quanto menor o gini melhor
     return gini_split
