@@ -40,7 +40,7 @@ def calcular_gini(y):
     proporcao = {}
 
     for caracteristica in y: 
-        proporcao[caracteristica] = proporcao.get(classe, 0) + 1
+        proporcao[caracteristica] = proporcao.get(caracteristica, 0) + 1
     
     for classe in proporcao:
         proporcao[classe] /= total
@@ -91,10 +91,10 @@ def dividir_dataset(X, y, atributo, threshold):
         # se for numérico 
         if X[i][atributo] < threshold: 
             X_esq.append(X[i])
-            y_esq.append[y[i]]
+            y_esq.append(y[i])
         else:
             X_dir.append(X[i])
-            y_dir.append[y[i]]
+            y_dir.append(y[i])
 
         # Se for categório
         # if X[i][atributo] == threshold:
@@ -123,8 +123,81 @@ def calcular_gini_split(y_esq, y_dir):
 
     
 
-def melhor_split():
-    pass
+def melhor_split(X, y):
+    """
+    Entre todos os atributos e possíveis valores de corte, encontrar 
+    - melhor atributo; 
+    - thresholds; 
+    - melhor valor;
+    - menor valor do gini separado
+
+    Parameters
+    ----------
+    X: np.array
+        Matriz de atributos 
+    y: 
+        Vetor de rótulos correspondente a CADA linha de X
+
+    Returns
+    -------
+    melhor_atributo: int
+        Índice do melhor atributo para fazer o split
+    melhor_threshold: float
+        Melhor valor de corte para dividir o dataset
+    melhor_gini: float
+        Menor valor de Gini encontrado
+
+    """
+    # 0° passo - inicializar variáveis para armazenar o melhor split
+    melhor_atributo = None 
+    melhor_threshold = None
+    melhor_gini = float("inf")
+    melhor_X_esq = None
+    melhor_y_esq = None
+    melhor_X_dir = None
+    melhor_y_dir = None
+    
+    
+    # Número de atributos (colunas)
+    num_atributos = X.shape[1]
+    
+    # 1° passo - iterar sobre CADA atributo
+    for atributo in range(num_atributos):
+        # Extrair os valores deste atributo
+        valores_atributo = X[:, atributo]
+        
+        # Ordenar os valores únicos para encontrar os thresholds
+        valores_unicos = np.unique(valores_atributo)
+        
+        # 2° passo - encontrar os thresholds possíveis para este atributo
+        for i in range(len(valores_unicos) - 1):
+            # Calcular threshold como média entre valores consecutivos
+            threshold_atual = (valores_unicos[i] + valores_unicos[i+1]) / 2
+            
+            # 3° passo - dividir o dataset usando este atributo e threshold
+            X_esq, y_esq, X_dir, y_dir = dividir_dataset(X, y, atributo, threshold_atual)
+            
+            # Verificar se o split é válido (ambos os lados têm dados)
+            if len(y_esq) == 0 or len(y_dir) == 0:
+                # Split não divide os dados, é inútil
+                continue
+            
+            # 4° passo - calcular o Gini deste split
+            gini_atual = calcular_gini_split(y_esq, y_dir)
+            
+            # 5° passo - atualizar se encontramos um split melhor
+            if gini_atual < melhor_gini:
+                melhor_gini = gini_atual
+                melhor_atributo = atributo
+                melhor_threshold = threshold_atual
+                melhor_X_esq = X_esq
+                melhor_y_esq = y_esq
+                melhor_X_dir = X_dir
+                melhor_y_dir = y_dir
+    
+    return melhor_atributo, melhor_threshold, melhor_gini, melhor_X_esq, melhor_y_esq, melhor_X_dir, melhor_y_dir
+
+
 
 
 
