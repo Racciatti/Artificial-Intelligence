@@ -213,49 +213,232 @@ def criterio_parada(criterio: int):
             return 3
 
 class ArvoreDecisaoClassificador:
-    def __init__(self):
-        pass
-
-        
-
-
-    def encontrar_melhor_split(X, y):
-        pass
-
-    def construir_arvore(x, y, *profundidade: int):
-        """
-        Função recursiva para construção da árvore
-        Critério de parada: o nó é da mesma classe OU não existe um split melhor que o Gini
+    """
+    Implementação de uma Árvore de Decisão para classificação usando o índice Gini.
+    """
     
+    def __init__(self, profundidade_max, min_amostras_split, min_gini_melhoria):
+        """
+        Construtor chucro
+
+        Parameters
+        ----------
+        profundidade_max: int
+            Profundidade máxima da árvore
+        min_amostras_split: int
+            Número mínimo de amostras necessárias para fazer um split
+        min_gini_melhoria: float
+            Melhoria mínima do Gini necessária para fazer um split
+        """
+        self.profundidade_max = profundidade_max
+        self.min_amostras_split = min_amostras_split
+        self.min_gini_melhoria = min_gini_melhoria
+        self.raiz = None
+    
+    def fit(self, X, y):
+        """
+        Treina a árvore de decisão.
+        
         Parameters
         ----------
         X: np.array
-            Matriz de atributos, ou seja, features
+            Matriz de atributos (features)
         y: np.array
-            Vetor de rótulos. Quantidade de classes.
-        profundidae: int 
-            Profundidade da árvore. Pode ser opcional, porque depende do critério de parada
+            Vetor de rótulos (classes)
+        """
+        X = np.array(X)
+        y = np.array(y)
+        self.raiz = self._construir_arvore(X, y, profundidade=0)
+        return self
+    
+    def construir_arvore(self, X, y, profundidade):
+        """
+        Função recursiva para construção da árvore
+        
+        Parameters
+        ----------
+        X: np.array
+            Matriz de atributos
+        y: np.array
+            Vetor de rótulos
+        profundidade: int 
+            Profundidade atual da árvore
         
         Returns 
         -------
-
+        Node
+            Nó da árvore (interno ou folha)
         """
-
-        # 1 - se o critério de parada for verdadeiro, retorna um nó folha
-        # 2 - fazer divisão das classes 
-        # 3 - Retornar recursivamente para o nó da direta ou esquerda
+        num_amostras = len(y)
+        num_classes = len(np.unique(y))
+        
+        # Critérios de parada
+        # 1 - Todas as amostras são da mesma classe
+        if num_classes == 1:
+            return Node(valor=y[0])
+        
+        # 2 - Profundidade máxima atingida
+        if profundidade >= self.profundidade_max:
+            classe_mais_comum = self._classe_mais_comum(y)
+            return Node(valor=classe_mais_comum)
+        
+        # 3 - Número mínimo de amostras para split
+        if num_amostras < self.min_amostras_split:
+            classe_mais_comum = self._classe_mais_comum(y)
+            return Node(valor=classe_mais_comum)
+        
+        # Encontrar o melhor split
+        melhor_atributo, melhor_threshold, melhor_gini, X_esq, y_esq, X_dir, y_dir = melhor_split(X, y)
+        
+        # 4 - Não existe split válido
+        if melhor_atributo is None:
+            classe_mais_comum = self._classe_mais_comum(y)
+            return Node(valor=classe_mais_comum)
+        
+        # 5 - Melhoria do Gini não é suficiente
+        gini_atual = calcular_gini(y)
+        melhoria = gini_atual - melhor_gini
+        if melhoria < self.min_gini_melhoria:
+            classe_mais_comum = self._classe_mais_comum(y)
+            return Node(valor=classe_mais_comum)
+        
+        # Construir subárvores recursivamente
+        X_esq = np.array(X_esq)
+        y_esq = np.array(y_esq)
+        X_dir = np.array(X_dir)
+        y_dir = np.array(y_dir)
+        
+        no_esquerdo = self._construir_arvore(X_esq, y_esq, profundidade + 1)
+        no_direito = self._construir_arvore(X_dir, y_dir, profundidade + 1)
+        
+        return Node(feature_index=melhor_atributo, 
+                   limiar=melhor_threshold,
+                   esquerda=no_esquerdo,
+                   direita=no_direito)
+    
+    def _classe_mais_comum(self, y):
+        """
+        Retorna a classe mais frequente em y.
+        
+        Parameters
+        ----------
+        y: np.array
+            Vetor de rótulos
+            
+        Returns
+        -------
+        classe_mais_comum
+            A classe que aparece mais vezes
+        """
+        valores, contagens = np.unique(y, return_counts=True)
+        indice_max = np.argmax(contagens)
+        return valores[indice_max]
+    
+    def predict(self, X):
+        """
+        Faz predições para as amostras em X.
+        
+        Parameters
+        ----------
+        X: np.array
+            Matriz de atributos para predição
+            
+        Returns
+        -------
+        np.array
+            Vetor com as predições
+        """
+        X = np.array(X)
+        return np.array([self._predizer_amostra(amostra, self.raiz) for amostra in X])
+    
+    def _predizer_amostra(self, amostra, no):
+        """
+        Prediz a classe de uma única amostra navegando pela árvore.
+        
+        Parameters
+        ----------
+        amostra: np.array
+            Uma linha de atributos
+        no: Node
+            Nó atual da árvore
+            
+        Returns
+        -------
+        classe
+            Classe predita para a amostra
+        """
+        # Se chegou em uma folha, retorna o valor
+        if no.folha():
+            return no.valor
+        
+        # Decidir se vai para esquerda ou direita
+        if amostra[no.feature_index] <= no.limiar:
+            return self._predizer_amostra(amostra, no.esquerda)
+        else:
+            return self._predizer_amostra(amostra, no.direita)
+    
+    def print_tree(self, no=None, profundidade=0):
+        """
+        Imprime a estrutura da árvore de forma visual.
+        
+        Parameters
+        ----------
+        no: Node
+            Nó atual (None usa a raiz)
+        profundidade: int
+            Profundidade atual para indentação
+        """
+        if no is None:
+            no = self.raiz
+        
+        if no is None:
+            print("Árvore vazia!")
+            return
+        
+        indentacao = "  " * profundidade
+        
+        if no.folha():
+            print(f"{indentacao}Folha: classe = {no.valor}")
+        else:
+            print(f"{indentacao}Nó: atributo[{no.feature_index}] <= {no.limiar:.2f}")
+            print(f"{indentacao}Esquerda:")
+            self.print_tree(no.esquerda, profundidade + 1)
+            print(f"{indentacao}Direita:")
+            self.print_tree(no.direita, profundidade + 1)
 
 
 
 class Node:
-    # Nó interno -> só não tem valor, pois ainda pode ser dividido 
-    # Nó folha -> resultado final. Só possui valor
-    def __init__(self, feature_index, limiar, esquerda, direita, valor):
-        self.feature_index = feature_index # qual característica estamos analisando para o nó específico
+    """
+    Classe que representa um nó da árvore de decisão.
+    
+    Nó interno -> possui feature_index e limiar, ainda pode ser dividido 
+    Nó folha -> resultado final, só possui valor (predição)
+    """
+    def __init__(self, feature_index=None, limiar=None, esquerda=None, direita=None, valor=None):
+        """
+        Parameters
+        ----------
+        feature_index: int
+            Índice do atributo usado para fazer o split neste nó
+        limiar: float
+            Valor de threshold para dividir os dados
+        esquerda: Node
+            Subárvore da esquerda (valores <= limiar)
+        direita: Node
+            Subárvore da direita (valores > limiar)
+        valor: 
+            Valor de predição para nó folha (classe mais comum)
+        """
+        self.feature_index = feature_index
         self.limiar = limiar
         self.esquerda = esquerda 
         self.direita = direita
         self.valor = valor
+    
+    def folha(self):
+        """Verifica se o nó é uma folha (não tem filhos)"""
+        return self.valor is not None
 
     
 
@@ -264,3 +447,44 @@ def split_numerico():
 
 def split_categorio():
     pass
+
+
+# Exemplo de uso
+if __name__ == "__main__":
+    # Criar dados de exemplo simples
+    # Vamos criar um dataset simples de classificação binária
+    X_treino = np.array([
+        [2.5, 3.0],
+        [1.5, 2.0],
+        [3.5, 4.0],
+        [3.0, 3.5],
+        [1.0, 1.5],
+        [4.0, 4.5],
+        [2.0, 2.5],
+        [3.8, 4.2]
+    ])
+    
+    y_treino = np.array([0, 0, 1, 1, 0, 1, 0, 1])
+    
+    # Criar e treinar a árvore
+    arvore = ArvoreDecisaoClassificador(profundidade_max=3, min_amostras_split=2)
+    arvore.fit(X_treino, y_treino)
+    
+    # Visualizar a estrutura da árvore
+    print("Estrutura da Árvore:")
+    print("=" * 50)
+    arvore.print_tree()
+    
+    # Fazer predições
+    X_teste = np.array([
+        [1.8, 2.2],
+        [3.2, 3.8],
+        [1.2, 1.8]
+    ])
+    
+    predicoes = arvore.predict(X_teste)
+    print("\n" + "=" * 50)
+    print("Predições:")
+    for i, pred in enumerate(predicoes):
+        print(f"Amostra {i+1}: {X_teste[i]} -> Classe {pred}")
+
