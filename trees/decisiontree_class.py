@@ -248,7 +248,7 @@ class ArvoreDecisaoClassificador:
         """
         X = np.array(X)
         y = np.array(y)
-        self.raiz = self._construir_arvore(X, y, profundidade=0)
+        self.raiz = self.construir_arvore(X, y, profundidade=0)
         return self
     
     def construir_arvore(self, X, y, profundidade):
@@ -275,16 +275,16 @@ class ArvoreDecisaoClassificador:
         # Critérios de parada
         # 1 - Todas as amostras são da mesma classe
         if num_classes == 1:
-            return Node(valor=y[0])
+            return Node(valor = y[0])
         
         # 2 - Profundidade máxima atingida
         if profundidade >= self.profundidade_max:
-            classe_mais_comum = self._classe_mais_comum(y)
+            classe_mais_comum = self.classe_mais_comum(y)
             return Node(valor=classe_mais_comum)
         
         # 3 - Número mínimo de amostras para split
         if num_amostras < self.min_amostras_split:
-            classe_mais_comum = self._classe_mais_comum(y)
+            classe_mais_comum = self.classe_mais_comum(y)
             return Node(valor=classe_mais_comum)
         
         # Encontrar o melhor split
@@ -292,14 +292,14 @@ class ArvoreDecisaoClassificador:
         
         # 4 - Não existe split válido
         if melhor_atributo is None:
-            classe_mais_comum = self._classe_mais_comum(y)
+            classe_mais_comum = self.classe_mais_comum(y)
             return Node(valor=classe_mais_comum)
         
         # 5 - Melhoria do Gini não é suficiente
         gini_atual = calcular_gini(y)
         melhoria = gini_atual - melhor_gini
         if melhoria < self.min_gini_melhoria:
-            classe_mais_comum = self._classe_mais_comum(y)
+            classe_mais_comum = self.classe_mais_comum(y)
             return Node(valor=classe_mais_comum)
         
         # Construir subárvores recursivamente
@@ -308,15 +308,12 @@ class ArvoreDecisaoClassificador:
         X_dir = np.array(X_dir)
         y_dir = np.array(y_dir)
         
-        no_esquerdo = self._construir_arvore(X_esq, y_esq, profundidade + 1)
-        no_direito = self._construir_arvore(X_dir, y_dir, profundidade + 1)
+        no_esquerdo = self.construir_arvore(X_esq, y_esq, profundidade + 1)
+        no_direito = self.construir_arvore(X_dir, y_dir, profundidade + 1)
         
-        return Node(feature_index=melhor_atributo, 
-                   limiar=melhor_threshold,
-                   esquerda=no_esquerdo,
-                   direita=no_direito)
+        return Node(feature_index=melhor_atributo, limiar=melhor_threshold,esquerda=no_esquerdo,direita=no_direito)
     
-    def _classe_mais_comum(self, y):
+    def classe_mais_comum(self, y):
         """
         Retorna a classe mais frequente em y.
         
@@ -333,79 +330,6 @@ class ArvoreDecisaoClassificador:
         valores, contagens = np.unique(y, return_counts=True)
         indice_max = np.argmax(contagens)
         return valores[indice_max]
-    
-    def predict(self, X):
-        """
-        Faz predições para as amostras em X.
-        
-        Parameters
-        ----------
-        X: np.array
-            Matriz de atributos para predição
-            
-        Returns
-        -------
-        np.array
-            Vetor com as predições
-        """
-        X = np.array(X)
-        return np.array([self._predizer_amostra(amostra, self.raiz) for amostra in X])
-    
-    def _predizer_amostra(self, amostra, no):
-        """
-        Prediz a classe de uma única amostra navegando pela árvore.
-        
-        Parameters
-        ----------
-        amostra: np.array
-            Uma linha de atributos
-        no: Node
-            Nó atual da árvore
-            
-        Returns
-        -------
-        classe
-            Classe predita para a amostra
-        """
-        # Se chegou em uma folha, retorna o valor
-        if no.folha():
-            return no.valor
-        
-        # Decidir se vai para esquerda ou direita
-        if amostra[no.feature_index] <= no.limiar:
-            return self._predizer_amostra(amostra, no.esquerda)
-        else:
-            return self._predizer_amostra(amostra, no.direita)
-    
-    def print_tree(self, no=None, profundidade=0):
-        """
-        Imprime a estrutura da árvore de forma visual.
-        
-        Parameters
-        ----------
-        no: Node
-            Nó atual (None usa a raiz)
-        profundidade: int
-            Profundidade atual para indentação
-        """
-        if no is None:
-            no = self.raiz
-        
-        if no is None:
-            print("Árvore vazia!")
-            return
-        
-        indentacao = "  " * profundidade
-        
-        if no.folha():
-            print(f"{indentacao}Folha: classe = {no.valor}")
-        else:
-            print(f"{indentacao}Nó: atributo[{no.feature_index}] <= {no.limiar:.2f}")
-            print(f"{indentacao}Esquerda:")
-            self.print_tree(no.esquerda, profundidade + 1)
-            print(f"{indentacao}Direita:")
-            self.print_tree(no.direita, profundidade + 1)
-
 
 
 class Node:
