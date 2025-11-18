@@ -83,16 +83,16 @@ class LearnSnake:
     def game_over(self):
         return self.game_close
         
-        
+            
         
     def step(self, action="None"):
         if action == "None":
             action = random.choice(["left", "right", "up", "down"])
         else:
             action = ["left", "right", "up", "down"][action]
-        
-        reward = 0
- 
+
+        reward = -0.5 #reward for action
+
         if action == "left" and (self.dir != "right" or self.snake_length == 1):
             self.c_change = -1
             self.r_change = 0
@@ -136,7 +136,7 @@ class LearnSnake:
             self.food_r, self.food_c = self.generate_food()
             self.board[self.food_r][self.food_c] = 2
             self.snake_length += 1
-            reward = 1 # food eaten, so +1 reward
+            reward = 10 # food eaten, so +1 reward
         else:
             rh1, ch1 = self.snake_coords[-1]
             if len(self.snake_coords) == 1:
@@ -146,7 +146,7 @@ class LearnSnake:
         
         # death = -10 reward
         if self.game_close:
-            reward = -10
+            reward = -100
         self.survived += 1
         
         return self.get_state(), reward, self.game_close

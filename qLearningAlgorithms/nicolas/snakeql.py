@@ -8,9 +8,9 @@ from visualsnake import run_game
 
 class SnakeQ():
     def __init__(self):
-        self.learning_rate = 0.1
-        self.discount_rate = 0.95
-        self.eps = 1 # exploração rate
+        self.learning_rate = 0.1 #podemos também chamar de alpha
+        self.discount_rate = 0.95 #esse de gamma
+        self.eps = 1 # exploração rate (epsilon)
         self.table = np.zeros((2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4))
         self.num_episodes = 100000
         self.eps_discount = 0.9995
@@ -45,7 +45,7 @@ class SnakeQ():
             self.eps *= self.eps_discount
             self.pontuacao.append(game_env.snake_length - 1) #Salvando o tamanho da cobra (laele)
 
-            if i % 25 == 0: #A cada 25 episodio
+            if i % 25 == 0: #A cada 25 episódios 
                 print(f"Media pontuação: {np.mean(self.pontuacao)} e episodio atual = {i}, valor = {self.eps}")
                 self.pontuacao.clear()
 
