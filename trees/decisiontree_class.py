@@ -441,6 +441,7 @@ class Node:
 
 
 # Testes e exemplos de uso
+# FEITO COM LLM
 if __name__ == "__main__":
     print("="*60)
     print("TESTANDO IMPLEMENTAÇÃO DA ÁRVORE DE DECISÃO")
