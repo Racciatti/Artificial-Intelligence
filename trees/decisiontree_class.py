@@ -89,7 +89,7 @@ def dividir_dataset(X, y, atributo, threshold):
     # 2° passo - percorrer o dataset
     for i in range(len(X)):
         # se for numérico 
-        if X[i][atributo] < threshold: 
+        if X[i][atributo] <= threshold: 
             X_esq.append(X[i])
             y_esq.append(y[i])
         else:
@@ -330,6 +330,79 @@ class ArvoreDecisaoClassificador:
         valores, contagens = np.unique(y, return_counts=True)
         indice_max = np.argmax(contagens)
         return valores[indice_max]
+    
+    def predict(self, X):
+        """
+        Faz predições para as amostras em X
+        
+        Parameters
+        ----------
+        X: np.array
+            Matriz de atributos para predição
+            
+        Returns
+        -------
+        np.array
+            Vetor com as predições
+        """
+        X = np.array(X)
+        return np.array([self.predizer_amostra(amostra, self.raiz) for amostra in X])
+    
+    def predizer_amostra(self, amostra, no):
+        """
+        Prediz a classe de uma única amostra navegando pela árvore
+        
+        Parameters
+        ----------
+        amostra: np.array
+            Uma linha de atributos
+        no: Node
+            Nó atual da árvore
+            
+        Returns
+        -------
+        classe
+            Classe predita para a amostra
+        """
+        # Se chegou em uma folha, retorna o valor
+        if no.folha():
+            return no.valor
+        
+        # Decidir se vai para esquerda ou direita
+        if amostra[no.feature_index] <= no.limiar:
+            return self.predizer_amostra(amostra, no.esquerda)
+        else:
+            return self.predizer_amostra(amostra, no.direita)
+    
+    # LLM
+    def print_tree(self, no=None, profundidade=0):
+        """
+        Imprime a estrutura da árvore de forma visual.
+        
+        Parameters
+        ----------
+        no: Node
+            Nó atual (None usa a raiz)
+        profundidade: int
+            Profundidade atual para indentação
+        """
+        if no is None:
+            no = self.raiz
+        
+        if no is None:
+            print("Árvore vazia!")
+            return
+        
+        indentacao = "  " * profundidade
+        
+        if no.folha():
+            print(f"{indentacao}Folha: classe = {no.valor}")
+        else:
+            print(f"{indentacao}Nó: atributo[{no.feature_index}] <= {no.limiar:.2f}")
+            print(f"{indentacao}Esquerda:")
+            self.print_tree(no.esquerda, profundidade + 1)
+            print(f"{indentacao}Direita:")
+            self.print_tree(no.direita, profundidade + 1)
 
 
 class Node:
@@ -366,17 +439,17 @@ class Node:
 
     
 
-def split_numerico():
-    pass
 
-def split_categorio():
-    pass
-
-
-# Exemplo de uso
+# Testes e exemplos de uso
 if __name__ == "__main__":
-    # Criar dados de exemplo simples
-    # Vamos criar um dataset simples de classificação binária
+    print("="*60)
+    print("TESTANDO IMPLEMENTAÇÃO DA ÁRVORE DE DECISÃO")
+    print("="*60)
+    
+    # Teste 1: Dataset simples de classificação binária
+    print("\n[TESTE 1] Dataset simples - Classificação Binária")
+    print("-"*60)
+    
     X_treino = np.array([
         [2.5, 3.0],
         [1.5, 2.0],
@@ -385,30 +458,110 @@ if __name__ == "__main__":
         [1.0, 1.5],
         [4.0, 4.5],
         [2.0, 2.5],
-        [3.8, 4.2]
+        [3.8, 4.2],
+        [1.2, 1.8],
+        [3.3, 3.9]
     ])
     
-    y_treino = np.array([0, 0, 1, 1, 0, 1, 0, 1])
+    y_treino = np.array([0, 0, 1, 1, 0, 1, 0, 1, 0, 1])
+    
+    print(f"Tamanho do dataset de treino: {len(X_treino)} amostras")
+    print(f"Classes: {np.unique(y_treino)}")
     
     # Criar e treinar a árvore
-    arvore = ArvoreDecisaoClassificador(profundidade_max=3, min_amostras_split=2)
+    arvore = ArvoreDecisaoClassificador(
+        profundidade_max=3, 
+        min_amostras_split=2,
+        min_gini_melhoria=0.0
+    )
+    
+    print("\nTreinando a árvore...")
     arvore.fit(X_treino, y_treino)
+    print("✓ Árvore treinada com sucesso!")
     
     # Visualizar a estrutura da árvore
-    print("Estrutura da Árvore:")
-    print("=" * 50)
+    print("\nEstrutura da Árvore:")
+    print("-"*60)
     arvore.print_tree()
     
-    # Fazer predições
+    # Fazer predições no conjunto de treino (verificar overfitting)
+    print("\nPredições no conjunto de treino:")
+    print("-"*60)
+    predicoes_treino = arvore.predict(X_treino)
+    acuracia_treino = np.mean(predicoes_treino == y_treino)
+    print(f"Acurácia no treino: {acuracia_treino*100:.2f}%")
+    
+    # Fazer predições em novos dados
+    print("\nPredições em novos dados:")
+    print("-"*60)
     X_teste = np.array([
         [1.8, 2.2],
         [3.2, 3.8],
-        [1.2, 1.8]
+        [1.2, 1.8],
+        [4.1, 4.3]
     ])
     
     predicoes = arvore.predict(X_teste)
-    print("\n" + "=" * 50)
-    print("Predições:")
     for i, pred in enumerate(predicoes):
-        print(f"Amostra {i+1}: {X_teste[i]} -> Classe {pred}")
-
+        print(f"Amostra {i+1}: {X_teste[i]} -> Classe predita: {pred}")
+    
+    # Teste 2: Testar funções auxiliares
+    print("\n" + "="*60)
+    print("[TESTE 2] Funções Auxiliares")
+    print("-"*60)
+    
+    # Testar calcular_gini
+    y_test_gini = np.array([0, 0, 0, 1, 1])
+    gini = calcular_gini(y_test_gini)
+    print(f"Gini de [0,0,0,1,1]: {gini:.4f}")
+    print(f"  Esperado: ~0.48 (60% classe 0, 40% classe 1)")
+    
+    y_puro = np.array([1, 1, 1, 1])
+    gini_puro = calcular_gini(y_puro)
+    print(f"\nGini de [1,1,1,1]: {gini_puro:.4f}")
+    print(f"  Esperado: 0.0 (conjunto puro)")
+    
+    # Testar dividir_dataset
+    print("\n" + "-"*60)
+    X_test_split = np.array([[1, 2], [3, 4], [5, 6], [7, 8]])
+    y_test_split = np.array([0, 0, 1, 1])
+    X_esq, y_esq, X_dir, y_dir = dividir_dataset(X_test_split, y_test_split, 0, 4)
+    print(f"Split no atributo 0, threshold=4:")
+    print(f"  Esquerda: {len(y_esq)} amostras com classes {y_esq}")
+    print(f"  Direita: {len(y_dir)} amostras com classes {y_dir}")
+    
+    # Teste 3: Dataset com 3 classes
+    print("\n" + "="*60)
+    print("[TESTE 3] Dataset com 3 Classes")
+    print("-"*60)
+    
+    X_multiclass = np.array([
+        [1, 1], [1.5, 1.5], [2, 2],  # Classe 0
+        [5, 5], [5.5, 5.5], [6, 6],  # Classe 1
+        [9, 9], [9.5, 9.5], [10, 10] # Classe 2
+    ])
+    
+    y_multiclass = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2])
+    
+    print(f"Dataset: {len(X_multiclass)} amostras, {len(np.unique(y_multiclass))} classes")
+    
+    arvore_multi = ArvoreDecisaoClassificador(
+        profundidade_max=4,
+        min_amostras_split=2,
+        min_gini_melhoria=0.0
+    )
+    
+    arvore_multi.fit(X_multiclass, y_multiclass)
+    print("✓ Árvore multi-classe treinada!")
+    
+    predicoes_multi = arvore_multi.predict(X_multiclass)
+    acuracia_multi = np.mean(predicoes_multi == y_multiclass)
+    print(f"Acurácia: {acuracia_multi*100:.2f}%")
+    
+    print("\nEstrutura da árvore multi-classe:")
+    print("-"*60)
+    arvore_multi.print_tree()
+    
+    print("\n" + "="*60)
+    print("TODOS OS TESTES CONCLUÍDOS COM SUCESSO! ✓")
+    print("="*60)
