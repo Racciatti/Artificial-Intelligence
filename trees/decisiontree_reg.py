@@ -67,7 +67,7 @@ def dividir_dataset(X, y, atributo, threshold):
     # 2° passo - percorrer o dataset
     for i in range(len(X)):
         # se for numérico 
-        if X[i][atributo] < threshold: 
+        if X[i][atributo] <= threshold: 
             X_esq.append(X[i])
             y_esq.append(y[i])
         else:
@@ -190,14 +190,14 @@ def criterio_parada(criterio: int):
             print("melhoria de MSE")
             return 3
 
-class ArvoreDecisaoClassificador:
+class ArvoreDecisaoRegressor:
     """
-    Implementação de uma Árvore de Decisão para classificação usando o índice MSE.
+    Implementação de uma Árvore de Decisão para REGRESSÃO usando o índice MSE.
     """
     
-    def __init__(self, profundidade_max, min_amostras_split, min_gini_melhoria):
+    def __init__(self, profundidade_max, min_amostras_split, min_mse_melhoria):
         """
-        Construtor chucro
+        Construtor da árvore de regressão
 
         Parameters
         ----------
@@ -205,24 +205,24 @@ class ArvoreDecisaoClassificador:
             Profundidade máxima da árvore
         min_amostras_split: int
             Número mínimo de amostras necessárias para fazer um split
-        min_gini_melhoria: float
+        min_mse_melhoria: float
             Melhoria mínima do MSE necessária para fazer um split
         """
         self.profundidade_max = profundidade_max
         self.min_amostras_split = min_amostras_split
-        self.min_gini_melhoria = min_gini_melhoria
+        self.min_mse_melhoria = min_mse_melhoria
         self.raiz = None
     
     def fit(self, X, y):
         """
-        Treina a árvore de decisão.
+        Treina a árvore de decisão para regressão.
         
         Parameters
         ----------
         X: np.array
             Matriz de atributos (features)
         y: np.array
-            Vetor de rótulos (classes)
+            Vetor de valores contínuos (targets para regressão)
         """
         X = np.array(X)
         y = np.array(y)
@@ -231,14 +231,14 @@ class ArvoreDecisaoClassificador:
     
     def construir_arvore(self, X, y, profundidade):
         """
-        Função recursiva para construção da árvore
+        Função recursiva para construção da árvore de regressão
         
         Parameters
         ----------
         X: np.array
             Matriz de atributos
         y: np.array
-            Vetor de rótulos
+            Vetor de valores contínuos
         profundidade: int 
             Profundidade atual da árvore
         
@@ -248,37 +248,32 @@ class ArvoreDecisaoClassificador:
             Nó da árvore (interno ou folha)
         """
         num_amostras = len(y)
-        num_classes = len(np.unique(y))
         
         # Critérios de parada
-        # 1 - Todas as amostras são da mesma classe
-        if num_classes == 1:
-            return Node(valor = y[0])
+        # 1 - MSE muito baixo (variância próxima de zero)
+        if calcular_mse(y) < 1e-7:
+            return Node(valor=np.mean(y))
         
         # 2 - Profundidade máxima atingida
         if profundidade >= self.profundidade_max:
-            classe_mais_comum = self.classe_mais_comum(y)
-            return Node(valor=classe_mais_comum)
+            return Node(valor=np.mean(y))
         
         # 3 - Número mínimo de amostras para split
         if num_amostras < self.min_amostras_split:
-            classe_mais_comum = self.classe_mais_comum(y)
-            return Node(valor=classe_mais_comum)
+            return Node(valor=np.mean(y))
         
         # Encontrar o melhor split
         melhor_atributo, melhor_threshold, melhor_mse, X_esq, y_esq, X_dir, y_dir = melhor_split(X, y)
         
         # 4 - Não existe split válido
         if melhor_atributo is None:
-            classe_mais_comum = self.classe_mais_comum(y)
-            return Node(valor=classe_mais_comum)
+            return Node(valor=np.mean(y))
         
         # 5 - Melhoria do MSE não é suficiente
         mse_atual = calcular_mse(y)
         melhoria = mse_atual - melhor_mse
-        if melhoria < self.min_gini_melhoria:
-            classe_mais_comum = self.classe_mais_comum(y)
-            return Node(valor=classe_mais_comum)
+        if melhoria < self.min_mse_melhoria:
+            return Node(valor=np.mean(y))
         
         # Construir subárvores recursivamente
         X_esq = np.array(X_esq)
@@ -291,28 +286,82 @@ class ArvoreDecisaoClassificador:
         
         return Node(feature_index=melhor_atributo, limiar=melhor_threshold,esquerda=no_esquerdo,direita=no_direito)
     
-    def classe_mais_comum(self, y):
+    def predict(self, X):
         """
-        Retorna a classe mais frequente em y.
+        Faz predições para as amostras em X
         
         Parameters
         ----------
-        y: np.array
-            Vetor de rótulos
+        X: np.array
+            Matriz de atributos para predição
             
         Returns
         -------
-        classe_mais_comum
-            A classe que aparece mais vezes
+        np.array
+            Vetor com as predições (valores contínuos)
         """
-        valores, contagens = np.unique(y, return_counts=True)
-        indice_max = np.argmax(contagens)
-        return valores[indice_max]
+        X = np.array(X)
+        return np.array([self.predizer_amostra(amostra, self.raiz) for amostra in X])
+    
+    def predizer_amostra(self, amostra, no):
+        """
+        Prediz o valor de uma única amostra navegando pela árvore
+        
+        Parameters
+        ----------
+        amostra: np.array
+            Uma linha de atributos
+        no: Node
+            Nó atual da árvore
+            
+        Returns
+        -------
+        float
+            Valor predito para a amostra
+        """
+        # Se chegou em uma folha, retorna o valor (média)
+        if no.folha():
+            return no.valor
+        
+        # Decidir se vai para esquerda ou direita
+        if amostra[no.feature_index] <= no.limiar:
+            return self.predizer_amostra(amostra, no.esquerda)
+        else:
+            return self.predizer_amostra(amostra, no.direita)
+    
+    def print_tree(self, no=None, profundidade=0):
+        """
+        Imprime a estrutura da árvore de forma visual
+        
+        Parameters
+        ----------
+        no: Node
+            Nó atual (None usa a raiz)
+        profundidade: int
+            Profundidade atual para indentação
+        """
+        if no is None:
+            no = self.raiz
+        
+        if no is None:
+            print("Árvore vazia!")
+            return
+        
+        indentacao = "  " * profundidade
+        
+        if no.folha():
+            print(f"{indentacao}Folha: valor = {no.valor:.4f}")
+        else:
+            print(f"{indentacao}Nó: atributo[{no.feature_index}] <= {no.limiar:.2f}")
+            print(f"{indentacao}Esquerda:")
+            self.print_tree(no.esquerda, profundidade + 1)
+            print(f"{indentacao}Direita:")
+            self.print_tree(no.direita, profundidade + 1)
 
 
 class Node:
     """
-    Classe que representa um nó da árvore de decisão.
+    Classe que representa um nó da árvore de decisão
     
     Nó interno -> possui feature_index e limiar, ainda pode ser dividido 
     Nó folha -> resultado final, só possui valor (predição)
